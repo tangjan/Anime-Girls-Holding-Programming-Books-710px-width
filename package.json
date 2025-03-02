@@ -1,0 +1,15 @@
+{
+  "name": "image-resizer",
+  "version": "1.0.0",
+  "description": "Resize images to 710px width",
+  "main": "resize.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jan Tang",
+  "license": "ISC",
+  "dependencies": {
+    "sharp": "^0.33.2",
+    "glob": "^10.3.10"
+  }
+}
