@@ -11,7 +11,7 @@ const githubApiUrl = axios.create({
   },
 });
 
-async function getRepoContents(path = "", images = []) {
+async function getRepoContents(path = "", images = [], imageMap = new Map()) {
   try {
     const encodedPath = path ? encodeURIComponent(path) : "";
     const url = encodedPath
@@ -24,12 +24,26 @@ async function getRepoContents(path = "", images = []) {
     if (Array.isArray(data)) {
       for (const item of data) {
         if (item.type === "dir") {
-          await getRepoContents(item.path, images); // 递归
+          await getRepoContents(item.path, images, imageMap); // 递归
         } else if (
           item.type === "file" &&
           /\.(jpg|jpeg|png|gif)$/i.test(item.name)
         ) {
-          images.push(item.download_url);
+          const isResized = /_resized\.(jpg|jpeg|png|gif)$/i.test(item.name);
+
+          // derive a base key without extension and without `_resized`
+          const lastDot = item.path.lastIndexOf(".");
+          const withoutExt =
+            lastDot >= 0 ? item.path.slice(0, lastDot) : item.path;
+          const baseKey = withoutExt.replace(/_resized$/i, "");
+
+          const existing = imageMap.get(baseKey) || {};
+          if (isResized) {
+            existing.resized = item.download_url;
+          } else {
+            existing.original = item.download_url;
+          }
+          imageMap.set(baseKey, existing);
         }
       }
     }
@@ -57,14 +71,20 @@ async function updateGist(content) {
 async function main() {
   try {
     const images = [];
-    await getRepoContents("", images);
+    const imageMap = new Map();
+    await getRepoContents("", images, imageMap);
+
+    const finalImages = [];
+    for (const { resized, original } of imageMap.values()) {
+      finalImages.push(resized || original);
+    }
 
     const result = {
       last_updated: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString(), // UTC+8
       source:
         "https://github.com/tangjan/Anime-Girls-Holding-Programming-Books-710px-width",
-      count: images.length,
-      images: images,
+      count: finalImages.length,
+      images: finalImages,
     };
 
     await updateGist(result);
