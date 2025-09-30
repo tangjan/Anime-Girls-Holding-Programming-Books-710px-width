@@ -24,4 +24,4 @@ jobs:
         run: npm install
 
       - name: Run update gist script
-        run: npm run to-gist
+        run: node to-gist.js
