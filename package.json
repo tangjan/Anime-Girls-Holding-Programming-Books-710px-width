@@ -9,7 +9,8 @@
   "author": "Jan Tang",
   "license": "ISC",
   "dependencies": {
-    "sharp": "^0.33.2",
-    "glob": "^10.3.10"
+    "axios": "^1.12.2",
+    "glob": "^10.3.10",
+    "sharp": "^0.33.2"
   }
 }
