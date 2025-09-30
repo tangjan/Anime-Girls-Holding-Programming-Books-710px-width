@@ -2,6 +2,7 @@
   "name": "image-resizer",
   "version": "1.0.0",
   "description": "Resize images to 710px width",
+  "type": "module",
   "main": "resize.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
